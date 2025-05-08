@@ -60,7 +60,7 @@ public class Batalha_Naval {
 
         while (jogoAtivo) {
             boolean continua = true;
-            while (continua) {
+            while (continua && jogoAtivo) {
                 System.out.println("\n=== PLACAR ===");
                 System.out.println("Turno: " + turno);
                 System.out.println("Jogador atual: " + atual.nome);
@@ -90,12 +90,10 @@ public class Batalha_Naval {
                     oponente.mapa[linha][coluna] = TIRO_NAVIO;
                     if (barcoAfundado(oponente, linha, coluna)) {
                         System.out.println("Você afundou um navio!");
-                        continua = false;
                     }
                     if (todosNaviosAfundados(oponente)) {
                         System.out.println("\nFIM DE JOGO! " + atual.nome + " venceu!");
                         jogoAtivo = false;
-                        break;
                     }
                 } else {
                     System.out.println("ÁGUA!");
@@ -115,7 +113,7 @@ public class Batalha_Naval {
 
     public String lerNome(String texto) {
         System.out.print(texto + " - Digite seu nome: ");
-        return ler.nextLine().trim();
+        return ler.nextLine();
     }
 
     public boolean escolherModoAlocacao(String nome) {
@@ -182,11 +180,15 @@ public class Batalha_Naval {
         for (int d = 0; d < 4; d++) {
             int nl = l + dx[d];
             int nc = c + dy[d];
-            while (nl >= 0 && nl < 10 && nc >= 0 && nc < 10) {
+            boolean continuarBusca = true;
+            while (continuarBusca && nl >= 0 && nl < 10 && nc >= 0 && nc < 10) {
                 if (j.mapa[nl][nc] == NAVIO) return false;
-                if (j.mapa[nl][nc] == AGUA || j.mapa[nl][nc] == TIRO_AGUA) break;
-                nl += dx[d];
-                nc += dy[d];
+                if (j.mapa[nl][nc] == AGUA || j.mapa[nl][nc] == TIRO_AGUA) {
+                    continuarBusca = false;
+                } else {
+                    nl += dx[d];
+                    nc += dy[d];
+                }
             }
         }
         return true;
@@ -229,7 +231,6 @@ public class Batalha_Naval {
         }
     }
 
-
     public int lerIntValido(int min, int max, String msg) {
         System.out.print(msg);
         return lerIntValido(min, max);
@@ -238,7 +239,7 @@ public class Batalha_Naval {
     public int lerColunaLetra(String msg) {
         while (true) {
             System.out.print(msg);
-            String entrada = ler.nextLine().trim().toUpperCase();
+            String entrada = ler.nextLine().toUpperCase();
             if (entrada.length() == 1) {
                 char letra = entrada.charAt(0);
                 if (letra >= 'A' && letra <= 'J') {
